@@ -511,7 +511,7 @@ body::-webkit-scrollbar {
 }
 
 .service-item {
-  background: rgba(0, 30, 60, 0.005); /* 99.5%透明 */
+  background: rgba(0, 30, 60, 0.05); /* 99.5%透明 */
   padding: 24px;
   border-radius: 16px;
   border: 1px solid rgba(150, 100, 255, 0.15); /* 紫色の枠線 */
