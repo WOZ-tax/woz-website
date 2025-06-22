@@ -468,9 +468,10 @@ body::-webkit-scrollbar {
 
 .content p.emphasis-small {
   font-size: 0.9rem;
-  color: rgba(100, 50, 200, 0.7); /* 濃い紫色 */
+  color: rgba(255, 255, 255, 0.8); /* 白色に変更 */
   margin-top: 12px;
   margin-bottom: 8px;
+  font-weight: 500; /* 少し太く */
 }
 
 .content strong {
