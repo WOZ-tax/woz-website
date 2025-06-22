@@ -402,7 +402,7 @@ body::-webkit-scrollbar {
   /* カードスタイル */
   background: rgba(0, 20, 40, 0.005); /* 99.5%透明 */
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 255, 255, 0.1);
+  border: 1px solid rgba(150, 100, 255, 0.2); /* 紫色の枠線 */
   border-radius: 20px;
   padding: 40px;
   box-shadow: 
@@ -419,7 +419,7 @@ body::-webkit-scrollbar {
   height: 1px;
   background: linear-gradient(90deg, 
     transparent 0%, 
-    rgba(0, 255, 255, 0.3) 50%, 
+    rgba(150, 100, 255, 0.3) 50%, /* 紫色 */
     transparent 100%);
   border-radius: 20px 20px 0 0;
 }
@@ -428,8 +428,8 @@ body::-webkit-scrollbar {
   font-size: 3rem;
   font-weight: 400;
   margin-bottom: 16px;
-  text-shadow: 0 0 15px rgba(0, 170, 255, 0.7);
-  background: linear-gradient(135deg, #ffffff 0%, rgba(0, 255, 255, 0.9) 100%);
+  text-shadow: 0 0 15px rgba(150, 100, 255, 0.7); /* 紫色の発光 */
+  background: linear-gradient(135deg, #ffffff 0%, rgba(150, 100, 255, 0.9) 100%); /* 紫色グラデーション */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -446,7 +446,7 @@ body::-webkit-scrollbar {
 .content p.lead {
   font-size: 1.3rem;
   font-weight: 400;
-  color: rgba(0, 255, 255, 0.9);
+  color: rgba(150, 100, 255, 0.9); /* 紫色 */
   margin-bottom: 20px;
   text-align: center;
 }
@@ -460,7 +460,7 @@ body::-webkit-scrollbar {
 
 .content p.emphasis {
   font-weight: 400;
-  color: rgba(0, 255, 255, 0.8);
+  color: rgba(150, 100, 255, 0.8); /* 紫色 */
   text-align: center;
   margin: 24px 0;
   font-size: 1.05rem;
@@ -468,14 +468,14 @@ body::-webkit-scrollbar {
 
 .content p.emphasis-small {
   font-size: 0.9rem;
-  color: rgba(0, 255, 255, 0.7);
+  color: rgba(150, 100, 255, 0.7); /* 紫色 */
   margin-top: 12px;
   margin-bottom: 8px;
 }
 
 .content strong {
   font-weight: 400;
-  color: rgba(0, 255, 255, 0.9);
+  color: rgba(150, 100, 255, 0.9); /* 紫色 */
 }
 
 /* サービスリスト */
@@ -498,7 +498,7 @@ body::-webkit-scrollbar {
   content: "▸";
   position: absolute;
   left: 0;
-  color: rgba(0, 255, 255, 0.5);
+  color: rgba(150, 100, 255, 0.5); /* 紫色 */
 }
 
 /* サービスグリッド */
@@ -513,7 +513,7 @@ body::-webkit-scrollbar {
   background: rgba(0, 30, 60, 0.005); /* 99.5%透明 */
   padding: 24px;
   border-radius: 16px;
-  border: 1px solid rgba(0, 255, 255, 0.08);
+  border: 1px solid rgba(150, 100, 255, 0.15); /* 紫色の枠線 */
   backdrop-filter: blur(5px);
   transition: all 0.3s ease;
   position: relative;
@@ -529,13 +529,13 @@ body::-webkit-scrollbar {
   height: 1px;
   background: linear-gradient(90deg, 
     transparent 0%, 
-    rgba(0, 255, 255, 0.1) 50%, 
+    rgba(150, 100, 255, 0.2) 50%, /* 紫色 */
     transparent 100%);
 }
 
 .service-item:hover {
   background: rgba(0, 40, 80, 0.08);
-  border-color: rgba(0, 255, 255, 0.15);
+  border-color: rgba(150, 100, 255, 0.25); /* 紫色 */
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
@@ -544,7 +544,7 @@ body::-webkit-scrollbar {
   font-size: 1.2rem;
   font-weight: 400;
   margin-bottom: 12px;
-  color: rgba(0, 255, 255, 0.9);
+  color: rgba(150, 100, 255, 0.9); /* 紫色 */
 }
 
 .service-item p {
@@ -699,19 +699,6 @@ body.scrolled .scroll-indicator {
   .orb-accent {
     width: 350px;
     height: 350px;
-  }
-  
-  /* モバイル専用の背景グラデーション */
-  body {
-    background: linear-gradient(135deg, #0a0020, #200040, #002040);
-    background-size: 400% 400%;
-    animation: mobile-gradient 15s ease infinite;
-  }
-  
-  @keyframes mobile-gradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
   }
   
   /* モバイル専用の軽量化 */
