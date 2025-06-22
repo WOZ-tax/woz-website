@@ -463,7 +463,7 @@ body::-webkit-scrollbar {
   color: rgba(100, 50, 200, 0.8); /* 濃い紫色 */
   text-align: center;
   margin: 24px 0;
-  font-size: 1.2rem; /* 1.05rem → 1.2rem に拡大 */
+  font-size: 1.5rem; /* 1.05rem → 1.2rem に拡大 */
 }
 
 .content p.emphasis-small {
