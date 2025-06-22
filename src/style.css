@@ -680,7 +680,7 @@ body.scrolled .scroll-indicator {
 
    /* emphasisは大きいサイズを維持 */
   .content p.emphasis {
-    font-size: 1.2rem; /* スマホ版でも大きく */
+    font-size: 1.1rem; /* スマホ版でも大きく */
   }
 
   .service-grid {
