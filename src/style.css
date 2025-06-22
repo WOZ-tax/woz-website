@@ -694,6 +694,19 @@ body.scrolled .scroll-indicator {
     height: 350px;
   }
   
+  /* モバイル専用の背景グラデーション */
+  body {
+    background: linear-gradient(135deg, #0a0020, #200040, #002040);
+    background-size: 400% 400%;
+    animation: mobile-gradient 15s ease infinite;
+  }
+  
+  @keyframes mobile-gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
   /* モバイル専用の軽量化 */
   .content, .service-item {
     backdrop-filter: none !important;
@@ -701,12 +714,17 @@ body.scrolled .scroll-indicator {
     box-shadow: none !important;
   }
   
-  /* 背景エフェクトをすべて非表示 */
+  /* 背景エフェクトをすべて非表示（オーブは表示） */
   .light-ray,
   .gradient-overlay,
-  .noise-overlay,
-  .orb-container {
+  .noise-overlay {
     display: none !important;
+  }
+  
+  /* オーブは表示するがアニメーションは停止 */
+  .orb {
+    animation: none !important;
+    opacity: 0.2;
   }
   
   /* Three.jsキャンバスの霧を薄く */
