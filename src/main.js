@@ -3,6 +3,17 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import './style.css';
 
+// ■ モバイル判定（より確実な方法）
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || 
+                 window.matchMedia("(max-width: 768px)").matches ||
+                 ('ontouchstart' in window) ||
+                 (navigator.maxTouchPoints > 0);
+
+// デバッグ用（確認したら削除してOK）
+console.log('Mobile detected:', isMobile);
+console.log('User Agent:', navigator.userAgent);
+console.log('Window width:', window.innerWidth);
+
 // ■ 1. 基本設定（シーン、カメラ、レンダラー）
 const scene = new THREE.Scene();
 
@@ -46,8 +57,8 @@ scene.add(world);
 
 // ■ 2. フラクタル成長のロジック
 
-const MAX_POINTS_PER_BRANCH = 5000;
-const MAX_BRANCHES = 40;
+const MAX_POINTS_PER_BRANCH = isMobile ? 500 : 5000;  // モバイルは1/10に
+const MAX_BRANCHES = isMobile ? 5 : 40;  // モバイルは5本だけ
 
 class Branch {
   constructor(color, startPosition) {
@@ -86,7 +97,7 @@ class Branch {
         newDirection.add(previousDirection).normalize();
       }
 
-      this.currentPosition.add(newDirection.multiplyScalar(0.3));
+      this.currentPosition.add(newDirection.multiplyScalar(isMobile ? 0.5 : 0.3));  // モバイルは超高速
       this.vertices.push(this.currentPosition.clone());
 
       const positions = this.geometry.attributes.position.array;
@@ -114,7 +125,7 @@ const branches = [];
 
 
 // 2.5 意識の砂嵐（パーティクル）の作成
-const particlesCount = 50000;
+const particlesCount = isMobile ? 1000 : 50000;  // モバイルは1000個だけ
 const particlePositions = new Float32Array(particlesCount * 3);
 const particleVelocities = new Float32Array(particlesCount * 3);
 const stormArea = 60;
@@ -157,7 +168,8 @@ const observerOptions = {
 const sectionObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
-      entry.target.classList.add('active');
+      // アニメーションを削除したので、activeクラスも不要
+      // entry.target.classList.add('active');
     }
   });
 }, observerOptions);
@@ -167,6 +179,17 @@ document.querySelectorAll('.section').forEach(section => {
   sectionObserver.observe(section);
 });
 
+// スクロールインジケーターのクリック処理
+const scrollIndicator = document.querySelector('.scroll-indicator');
+if (scrollIndicator) {
+  scrollIndicator.addEventListener('click', () => {
+    window.scrollTo({
+      top: window.innerHeight,
+      behavior: 'smooth'
+    });
+  });
+}
+
 window.addEventListener('scroll', () => {
   scrollY = window.scrollY;
   const newSection = Math.round(scrollY / sizes.height);
@@ -174,6 +197,13 @@ window.addEventListener('scroll', () => {
   if (newSection !== currentSection) {
     currentSection = newSection;
     console.log('Evolution Stage:', currentSection);
+  }
+
+  // スクロールしたらbodyにクラスを追加（スクロールインジケーター非表示用）
+  if (scrollY > 100) {
+    document.body.classList.add('scrolled');
+  } else {
+    document.body.classList.remove('scrolled');
   }
 });
 
@@ -234,8 +264,8 @@ const animate = () => {
   }
   consciousnessStorm.geometry.attributes.position.needsUpdate = true;
   
-  // ステージ3：覚醒（脈動）
-  if (currentSection >= 3) {
+  // ステージ3：覚醒（脈動）- モバイルでは無効化
+  if (currentSection >= 3 && !isMobile) {
       const pulse = (Math.sin(elapsedTime * 4.0) + 1.0) / 2.0;
       particlesMaterial.size = 0.03 + pulse * 0.03;
       particlesMaterial.opacity = 0.3 + pulse * 0.3;
@@ -244,7 +274,7 @@ const animate = () => {
           branch.material.opacity = 0.5 + pulse * 0.5;
           branch.material.color.copy(branch.originalColor).lerp(targetColor, pulse);
       });
-  } else {
+  } else if (!isMobile) {
       const lerpFactor = 0.1;
       particlesMaterial.size += (0.03 - particlesMaterial.size) * lerpFactor;
       particlesMaterial.opacity += (0.3 - particlesMaterial.opacity) * lerpFactor;

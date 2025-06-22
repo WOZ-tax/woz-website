@@ -693,4 +693,30 @@ body.scrolled .scroll-indicator {
     width: 350px;
     height: 350px;
   }
+  
+  /* モバイル専用の軽量化 */
+  .content, .service-item {
+    backdrop-filter: none !important;
+    background: rgba(0, 20, 40, 0.9) !important;
+    box-shadow: none !important;
+  }
+  
+  /* 背景エフェクトをすべて非表示 */
+  .light-ray,
+  .gradient-overlay,
+  .noise-overlay,
+  .orb-container {
+    display: none !important;
+  }
+  
+  /* Three.jsキャンバスの霧を薄く */
+  .webgl {
+    opacity: 0.7;
+  }
+  
+  /* スクロール矢印も簡素化 */
+  .scroll-arrow span {
+    animation: none !important;
+    opacity: 0.6;
+  }
 }
