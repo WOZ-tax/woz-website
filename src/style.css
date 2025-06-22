@@ -32,7 +32,7 @@ body::-webkit-scrollbar {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(to bottom, #000000 0%, #000000 80%, #FFD700 100%);
+  background: radial-gradient(circle at center, #0a0a0a 0%, #000000 100%);
   z-index: -10;
 }
 
@@ -700,6 +700,11 @@ body.scrolled .scroll-indicator {
   .orb-accent {
     width: 350px;
     height: 350px;
+  }
+  
+  /* モバイル専用の背景グラデーション */
+  .background-base {
+    background: linear-gradient(to bottom, #FFD700 0%, #FFD700 10%, #000000 100%);
   }
   
   /* モバイル専用の軽量化 */
