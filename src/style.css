@@ -429,7 +429,7 @@ body::-webkit-scrollbar {
   font-weight: 400;
   margin-bottom: 16px;
   text-shadow: 0 0 15px rgba(150, 100, 255, 0.7); /* 紫色の発光 */
-  background: linear-gradient(135deg, #ffffff 0%, rgba(150, 100, 255, 0.9) 100%); /* 紫色グラデーション */
+  background: linear-gradient(135deg, #ffffff 0%, rgba(100, 50, 200, 0.9) 100%); /* 濃い紫色グラデーション */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -446,7 +446,7 @@ body::-webkit-scrollbar {
 .content p.lead {
   font-size: 1.3rem;
   font-weight: 400;
-  color: rgba(150, 100, 255, 0.9); /* 紫色 */
+  color: rgba(100, 50, 200, 0.9); /* 濃い紫色 */
   margin-bottom: 20px;
   text-align: center;
 }
@@ -460,7 +460,7 @@ body::-webkit-scrollbar {
 
 .content p.emphasis {
   font-weight: 400;
-  color: rgba(150, 100, 255, 0.8); /* 紫色 */
+  color: rgba(100, 50, 200, 0.8); /* 濃い紫色 */
   text-align: center;
   margin: 24px 0;
   font-size: 1.05rem;
@@ -468,14 +468,14 @@ body::-webkit-scrollbar {
 
 .content p.emphasis-small {
   font-size: 0.9rem;
-  color: rgba(150, 100, 255, 0.7); /* 紫色 */
+  color: rgba(100, 50, 200, 0.7); /* 濃い紫色 */
   margin-top: 12px;
   margin-bottom: 8px;
 }
 
 .content strong {
   font-weight: 400;
-  color: rgba(150, 100, 255, 0.9); /* 紫色 */
+  color: rgba(100, 50, 200, 0.9); /* 濃い紫色 */
 }
 
 /* サービスリスト */
@@ -544,7 +544,7 @@ body::-webkit-scrollbar {
   font-size: 1.2rem;
   font-weight: 400;
   margin-bottom: 12px;
-  color: rgba(150, 100, 255, 0.9); /* 紫色 */
+  color: rgba(100, 50, 200, 0.9); /* 濃い紫色 */
 }
 
 .service-item p {
