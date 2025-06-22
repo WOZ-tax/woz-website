@@ -704,7 +704,7 @@ body.scrolled .scroll-indicator {
   
   /* モバイル専用の背景グラデーション */
   .background-base {
-    background: linear-gradient(to bottom, #FFD700 0%, #000000 10%, #000000 100%);
+    background: linear-gradient(to bottom, #FFD700 0%, #000000 20%, #000000 100%);
   }
   
   /* モバイル専用の軽量化 */
