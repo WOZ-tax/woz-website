@@ -400,7 +400,7 @@ body::-webkit-scrollbar {
   transform: translateY(0);
   pointer-events: auto;
   /* カードスタイル */
-  background: rgba(0, 20, 40, 0.005); /* 99.5%透明 */
+  background: rgba(0, 20, 40, 0.05); /* 95%透明 */
   backdrop-filter: blur(10px);
   border: 1px solid rgba(150, 100, 255, 0.2); /* 紫色の枠線 */
   border-radius: 20px;
