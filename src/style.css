@@ -677,7 +677,12 @@ body.scrolled .scroll-indicator {
   .content p.detail {
     font-size: 0.9rem;
   }
-  
+
+   /* emphasisは大きいサイズを維持 */
+  .content p.emphasis {
+    font-size: 1.3rem; /* スマホ版でも大きく */
+  }
+
   .service-grid {
     grid-template-columns: 1fr;
     gap: 16px;
