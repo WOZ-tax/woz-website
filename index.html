@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WOZ. | AI × 税理士</title>
+  </head>
+  <body>
+
+    <!-- 背景レイヤー -->
+    <div class="background-base"></div>
+    <div class="gradient-overlay"></div>
+    <div class="noise-overlay"></div>
+    <div class="orb-container">
+        <div class="orb orb-primary"></div>
+        <div class="orb orb-secondary"></div>
+        <div class="orb orb-accent"></div>
+        <div class="orb pulse-orb"></div>
+    </div>
+    <div class="light-ray"></div>
+    <div class="light-ray"></div>
+    <div class="light-ray"></div>
+    <div class="light-ray"></div>
+    <!-- 追加のオーロラレイヤー -->
+    <div class="light-ray aurora-extra"></div>
+    <div class="light-ray aurora-extra"></div>
+
+    <!-- 3Dの世界 -->
+    <canvas class="webgl"></canvas>
+
+    <!-- ロゴ -->
+    <div class="logo-container">
+        <img src="/100x50_woz_purple.png" alt="WOZ Logo" class="logo">
+    </div>
+
+    <!-- スクロールインジケーター -->
+    <div class="scroll-indicator">
+        <span class="scroll-text">SCROLL</span>
+        <div class="scroll-arrow">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <!-- コンテンツ -->
+    <main class="main">
+      <section class="section">
+        <div class="content">
+          <h2>00 : AI × 税理士</h2>
+          <p class="lead">「AIが税理士を不要にする」</p>
+          <p class="detail">この予言が囁かれ始めてから、すでに10年以上の月日が流れました。</p>
+          <p class="detail">かつては遠い未来の話だと誰もが思っていました。しかし、生成AIの登場がすべてを変えました。ChatGPTが世界を席巻し、AIが人間の知的作業を次々とこなしていく現実を目の当たりにして、私たちはついに認めざるを得なくなったのです。</p>
+          <p class="detail emphasis">変化は、もうそこまで来ています。</p>
+          <p class="detail">今、税理士業界は大きな分岐点に立っています。</p>
+          <p class="detail">AIを恐れ、目を背ける者。<br>AIを道具として使いこなし、新たな価値を創造する者。</p>
+          <p class="detail">この選択が、5年後、10年後の明暗を分けることになるでしょう。</p>
+          <p class="detail">私たちWOZは、AIを敵ではなく最強のパートナーとして迎え入れます。人間の創造性とAIの処理能力を融合させ、これまでにない革新的なサービスを生み出していきます。</p>
+          <p class="detail emphasis">時代の変革期にこそ、真のリーダーが生まれます。</p>
+          <p class="detail">WOZは、圧倒的な技術力と創造力で、税理士業界の新しい地平を切り拓いてまいります。</p>
+        </div>
+      </section>
+      <section class="section">
+        <div class="content">
+          <h2>01 : Story</h2>
+          <p class="detail">世界を変えたApple。<br>その伝説の始まりに、二人のスティーブがいました。</p>
+          <p class="detail">カリスマ的リーダー、スティーブ・ジョブズ。<br>そして、天才エンジニア、スティーブ・ウォズニアック。</p>
+          <p class="detail">ジョブズの革新的なビジョンが世界の注目を集める一方で、それを現実にする技術を生み出し続けたのは、「ウォズ」の愛称で親しまれたウォズニアックでした。</p>
+          <p class="detail">AppleⅠ、AppleⅡ―<br>歴史に名を刻むこれらの名機は、ガレージで黙々とはんだごてを握る彼の手から生まれました。</p>
+          <p class="detail">華やかな表舞台の裏で、ジョブズの夢を支え続けた最良のパートナー。<br>それがウォズニアックでした。</p>
+          <p class="detail">私たちが「WOZ.」という名を選んだのは、まさにそんな存在でありたいという決意の表れです。</p>
+          <p class="detail">経営者の皆様が描く理想を、確かな技術と献身的なサポートで実現する。<br>成功の喜びも、挑戦の苦しみも、すべてを共に分かち合う。</p>
+          <p class="detail emphasis">ひとりでは成し遂げられないことも、<br>WOZ.となら、きっと成し遂げられる。</p>
+          <p class="detail">私たちWOZ.は、あなたのビジョンを現実に変える、最良のパートナーです。</p>
+        </div>
+      </section>
+      <section class="section">
+        <div class="content">
+          <h2>02 : Service</h2>
+          <p class="lead">Big4出身の税理士が、お客様をサポートいたします。</p>
+          
+          <div class="service-grid">
+            <div class="service-item">
+              <h3>法人のお客様</h3>
+              <p class="detail">中小企業から大企業まで、業種業態を問わず税務顧問及び確定申告のサービスを提供しています。</p>
+              <p class="detail">お客様のフェーズにあった適切なアドバイス通じて、企業の成長をサポートします。また、経理業務のDX化、AI導入などの提案、支援なども行います。</p>
+              <p class="detail emphasis-small">特に下記のような法人を得意としています</p>
+              <ul class="service-list">
+                <li>拡大志向のスタートアップ</li>
+                <li>IPOやM&AでEXITを目指している法人</li>
+                <li>2代目、3代目の代替わりに伴う経営の若返りを目指している法人</li>
+              </ul>
+            </div>
+            
+            <div class="service-item">
+              <h3>個人のお客様</h3>
+              <p class="detail">3年以内に法人化を目指す個人事業主の方に対し、法人化へのアドバイスも含めた月次顧問＋確定申告のサービスをフルリモートで提供しています。</p>
+              <p class="detail">年一確定申告のみのプランは原則的には提供していません。なぜなら、年一確定申告のみのサービスでは、法人化に向けての適切なアドバイスを行うことは難しいと考えているからです。</p>
+              <p class="detail">そのため、長期的な視点に立って事業を成長させたいと考えているお客様向けのサービスとなっています。</p>
+            </div>
+            
+            <div class="service-item">
+              <h3>SPC（TMK,GK-TK）のお客様</h3>
+              <p class="detail">特定目的会社（TMK）や匿名組合（GK-TK）などのSPCの税務申告にも対応しております。</p>
+              <p class="detail">太陽光発電、オフィス、ホテルなど、SPCの記帳代行・税務申告もお任せください。</p>
+            </div>
+            
+            <div class="service-item">
+              <h3>国際税務</h3>
+              <p class="detail">外国法人の日本支店などの税務申告にも対応しております。</p>
+              <p class="detail">また、租税条約の届け出など、その他の国際税務業務についてもお気軽にお問合せください。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="section">
+        <div class="content">
+          <h2>03 : Profile</h2>
+          <p>Coming Soon...</p>
+        </div>
+      </section>
+      <section class="section">
+        <div class="content">
+          <h2>04 : Contact</h2>
+          <p>Coming Soon...</p>
+        </div>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
