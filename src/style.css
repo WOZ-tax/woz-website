@@ -327,6 +327,13 @@ body::-webkit-scrollbar {
   }
 }
 
+/* モバイル専用オーブ（PC版では非表示） */
+.mobile-orb-1,
+.mobile-orb-2,
+.mobile-orb-3 {
+  display: none;
+}
+
 /* Three.jsのcanvas */
 .webgl {
   position: fixed;
@@ -696,7 +703,7 @@ body.scrolled .scroll-indicator {
   
   /* モバイル専用の背景グラデーション */
   body {
-    background: linear-gradient(135deg, #0a0020, #200040, #002040) !important;
+    background: linear-gradient(135deg, #0a0020, #200040, #002040);
     background-size: 400% 400%;
     animation: mobile-gradient 15s ease infinite;
   }
@@ -710,7 +717,7 @@ body.scrolled .scroll-indicator {
   /* モバイル専用の軽量化 */
   .content, .service-item {
     backdrop-filter: none !important;
-    background: rgba(0, 20, 40, 0.05) !important;
+    background: rgba(0, 20, 40, 0.3) !important;  /* 透明度を上げた（70%透明） */
     box-shadow: none !important;
   }
   
@@ -721,10 +728,58 @@ body.scrolled .scroll-indicator {
     display: none !important;
   }
   
-  /* オーブは表示するがアニメーションは停止 */
-  .orb {
-    animation: none !important;
-    opacity: 0.2;
+  /* 既存のオーブも位置調整 */
+  .orb-primary {
+    width: 300px;
+    height: 300px;
+    top: -50px;  /* -200px → -50px */
+    left: -50px;  /* -200px → -50px */
+  }
+  
+  .orb-secondary {
+    width: 200px;
+    height: 200px;
+    bottom: -50px;  /* -150px → -50px */
+    right: -50px;  /* -150px → -50px */
+  }
+  
+  .orb-accent {
+    width: 250px;
+    height: 250px;
+    top: 30%;  /* 画面内に調整 */
+    left: 20%;  /* 画面内に調整 */
+  }
+  
+  /* モバイル専用オーブを表示 */
+  .mobile-orb-1,
+  .mobile-orb-2,
+  .mobile-orb-3 {
+    display: block !important;
+    opacity: 0.15;
+  }
+  
+  .mobile-orb-1 {
+    width: 150px;  /* 200px → 150px */
+    height: 150px;
+    background: radial-gradient(circle, rgba(255, 100, 200, 0.6) 0%, transparent 70%);
+    top: 5%;  /* 10% → 5% */
+    right: 5%;  /* 10% → 5% */
+  }
+  
+  .mobile-orb-2 {
+    width: 200px;  /* 250px → 200px */
+    height: 200px;
+    background: radial-gradient(circle, rgba(100, 255, 255, 0.5) 0%, transparent 70%);
+    bottom: 10%;  /* 20% → 10% */
+    left: 5%;
+  }
+  
+  .mobile-orb-3 {
+    width: 150px;  /* 180px → 150px */
+    height: 150px;
+    background: radial-gradient(circle, rgba(255, 255, 100, 0.5) 0%, transparent 70%);
+    top: 50%;  /* 40% → 50% */
+    right: 20%;  /* 30% → 20% */
   }
   
   /* Three.jsキャンバスの霧を薄く */
