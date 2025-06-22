@@ -1,740 +1,303 @@
-/* src/style.css */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400&display=swap');
+// src/main.js
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import './style.css';
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+// ■ モバイル判定（より確実な方法）
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || 
+                 window.matchMedia("(max-width: 768px)").matches ||
+                 ('ontouchstart' in window) ||
+                 (navigator.maxTouchPoints > 0);
+
+// ■ 1. 基本設定（シーン、カメラ、レンダラー）
+const scene = new THREE.Scene();
+
+// 夜明け前のブルー
+const preDawnBlue = 0x02081a;
+scene.fog = new THREE.FogExp2(preDawnBlue, 0.03); 
+
+// サイズ管理オブジェクト
+const sizes = {
+    width: document.documentElement.clientWidth,
+    height: document.documentElement.clientHeight
 }
 
-html, body {
-  overflow-x: hidden;
-  min-height: 100vh;
-}
+const camera = new THREE.PerspectiveCamera(
+  75,
+  sizes.width / sizes.height,
+  0.1,
+  1000
+);
+camera.position.set(0, 0, 30);
 
-body {
-  font-family: 'Noto Sans JP', sans-serif;
-  color: #ffffff;
-  background-color: #000000;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
+const canvas = document.querySelector('.webgl');
+const renderer = new THREE.WebGLRenderer({
+  canvas: canvas,
+  antialias: true,
+  alpha: true  // ★★★ 透明な背景を有効化 ★★★
+});
+renderer.setSize(sizes.width, sizes.height);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+// renderer.setClearColor()は使わない（透明にするため）
 
-body::-webkit-scrollbar {
-  display: none;
-}
+// ■ OrbitControlsの追加
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+controls.dampingFactor = 0.05;
 
-/* ★★★★★ 背景レイヤー ★★★★★ */
+// 全ての世界を格納するグループを作成
+const world = new THREE.Group();
+scene.add(world);
 
-.background-base {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: radial-gradient(circle at center, #0a0a0a 0%, #000000 100%);
-  z-index: -10;
-}
 
-.gradient-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: 
-      radial-gradient(circle at 20% 30%, rgba(0, 240, 255, 0.15) 0%, transparent 40%),
-      radial-gradient(circle at 80% 60%, rgba(255, 0, 230, 0.12) 0%, transparent 45%),
-      radial-gradient(circle at 50% 90%, rgba(123, 97, 255, 0.1) 0%, transparent 50%);
-  z-index: -9;
-  mix-blend-mode: screen;
-  animation: gradient-shift 20s ease-in-out infinite;
-}
+// ■ 2. フラクタル成長のロジック
 
-@keyframes gradient-shift {
-  0%, 100% { opacity: 0.8; transform: scale(1) rotate(0deg); }
-  50% { opacity: 1; transform: scale(1.1) rotate(5deg); }
-}
+const MAX_POINTS_PER_BRANCH = isMobile ? 500 : 5000;  // モバイルは1/10に
+const MAX_BRANCHES = isMobile ? 20 : 40;  // モバイルは20本
 
-/* ノイズオーバーレイ */
-.noise-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.03;
-  z-index: -7;
-  background-image: 
-    repeating-linear-gradient(45deg, transparent, transparent 1px, rgba(255,255,255,.05) 1px, rgba(255,255,255,.05) 2px);
-  pointer-events: none;
-}
+class Branch {
+  constructor(color, startPosition) {
+    const positions = new Float32Array(MAX_POINTS_PER_BRANCH * 3);
+    this.geometry = new THREE.BufferGeometry();
+    this.geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
 
-.orb-container {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  z-index: -8;
-}
+    this.material = new THREE.LineBasicMaterial({
+      color: color,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      opacity: 0.8,
+    });
+    
+    this.originalColor = new THREE.Color(color);
 
-.orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  mix-blend-mode: screen;
-  animation: float 25s infinite ease-in-out;
-}
-
-.orb-primary {
-  width: 600px; 
-  height: 600px;
-  background: radial-gradient(circle, rgba(0, 240, 255, 0.8) 0%, transparent 70%);
-  top: -200px; 
-  left: -200px;
-  animation-duration: 30s;
-}
-
-.orb-secondary {
-  width: 400px; 
-  height: 400px;
-  background: radial-gradient(circle, rgba(255, 0, 230, 0.7) 0%, transparent 70%);
-  bottom: -150px; 
-  right: -150px;
-  animation-duration: 35s; 
-  animation-delay: -10s;
-}
-
-.orb-accent {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(123, 97, 255, 0.6) 0%, transparent 70%);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  animation-duration: 40s;
-  animation-delay: -20s;
-}
-
-.pulse-orb {
-  width: 300px; 
-  height: 300px;
-  background: radial-gradient(circle, rgba(0, 255, 127, 0.6) 0%, transparent 70%);
-  top: 20%; 
-  right: 20%;
-  filter: blur(60px);
-  animation: pulse-glow 4s ease-in-out infinite, float 22s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25% { transform: translate(80px, -60px) scale(1.1); }
-  50% { transform: translate(-60px, 40px) scale(0.95); }
-  75% { transform: translate(40px, 80px) scale(1.05); }
-}
-
-@keyframes pulse-glow {
-  0%, 100% { opacity: 0.4; transform: scale(1); }
-  50% { opacity: 0.8; transform: scale(1.2); }
-}
-
-/* オーロラエフェクト */
-.light-ray {
-  position: fixed;
-  width: 120%;
-  left: -10%;
-  opacity: 0;
-  z-index: -6;
-  mix-blend-mode: screen;
-  animation: aurora-dance 15s ease-in-out infinite;
-}
-
-/* メインオーロラカーテン */
-.light-ray:nth-child(5) { 
-  top: -5%;
-  height: 35%;
-  background: 
-    radial-gradient(ellipse at top, rgba(0, 255, 170, 0.4) 0%, transparent 40%),
-    linear-gradient(90deg, 
-      transparent 0%, 
-      rgba(0, 255, 170, 0.3) 10%,
-      rgba(0, 255, 255, 0.4) 20%,
-      rgba(0, 170, 255, 0.5) 30%,
-      rgba(50, 255, 200, 0.4) 40%,
-      rgba(0, 255, 170, 0.3) 50%,
-      rgba(100, 200, 255, 0.4) 60%,
-      rgba(0, 255, 200, 0.3) 70%,
-      rgba(0, 220, 255, 0.4) 80%,
-      rgba(0, 255, 170, 0.3) 90%,
-      transparent 100%);
-  filter: blur(30px);
-  animation-duration: 25s;
-  animation-delay: 0s;
-}
-
-/* 上層の明るいオーロラ */
-.light-ray:nth-child(6) { 
-  top: 0%;
-  height: 25%;
-  background: 
-    linear-gradient(105deg, 
-      transparent 0%, 
-      rgba(100, 255, 220, 0.5) 15%,
-      rgba(0, 255, 255, 0.6) 25%,
-      rgba(150, 200, 255, 0.5) 35%,
-      rgba(0, 255, 200, 0.6) 45%,
-      rgba(50, 255, 255, 0.5) 55%,
-      rgba(200, 150, 255, 0.4) 65%,
-      rgba(0, 255, 220, 0.5) 75%,
-      transparent 100%);
-  filter: blur(50px) brightness(1.5);
-  animation-delay: 4s;
-  animation-duration: 30s;
-}
-
-/* 中層の波打つオーロラ */
-.light-ray:nth-child(7) { 
-  top: 5%;
-  height: 30%;
-  background: 
-    radial-gradient(ellipse at center, rgba(0, 255, 200, 0.3) 0%, transparent 50%),
-    linear-gradient(120deg, 
-      transparent 0%, 
-      rgba(0, 255, 150, 0.4) 20%,
-      rgba(50, 200, 255, 0.5) 35%,
-      rgba(150, 100, 255, 0.4) 50%,
-      rgba(0, 255, 200, 0.5) 65%,
-      rgba(100, 150, 255, 0.4) 80%,
-      transparent 100%);
-  filter: blur(40px);
-  animation-delay: 8s;
-  animation-duration: 22s;
-}
-
-/* 下層の淡いオーロラ */
-.light-ray:nth-child(8) { 
-  top: 10%;
-  height: 25%;
-  background: 
-    linear-gradient(95deg, 
-      transparent 0%, 
-      rgba(0, 255, 255, 0.2) 25%,
-      rgba(100, 150, 255, 0.3) 40%,
-      rgba(0, 255, 200, 0.2) 55%,
-      rgba(150, 200, 255, 0.3) 70%,
-      rgba(0, 255, 180, 0.2) 85%,
-      transparent 100%);
-  filter: blur(60px);
-  animation-delay: 12s;
-  animation-duration: 35s;
-}
-
-@keyframes aurora-dance {
-  0%, 100% { 
-    opacity: 0;
-    transform: translateY(0) translateX(0) scaleY(1) skewX(0deg) rotate(0deg);
+    this.line = new THREE.Line(this.geometry, this.material);
+    this.currentPosition = startPosition.clone();
+    this.vertices = [this.currentPosition.clone()];
+    this.pointsDrawn = 0;
   }
-  10% {
-    opacity: 0.3;
-    transform: translateY(-10px) translateX(20px) scaleY(1.1) skewX(5deg) rotate(1deg);
-  }
-  25% {
-    opacity: 0.8;
-    transform: translateY(-30px) translateX(-30px) scaleY(1.2) skewX(-10deg) rotate(-2deg);
-  }
-  40% {
-    opacity: 1;
-    transform: translateY(20px) translateX(40px) scaleY(0.9) skewX(15deg) rotate(3deg);
-  }
-  55% {
-    opacity: 0.9;
-    transform: translateY(-40px) translateX(-20px) scaleY(1.3) skewX(-8deg) rotate(-1deg);
-  }
-  70% {
-    opacity: 0.7;
-    transform: translateY(30px) translateX(30px) scaleY(0.8) skewX(12deg) rotate(2deg);
-  }
-  85% {
-    opacity: 0.4;
-    transform: translateY(-20px) translateX(-40px) scaleY(1.1) skewX(-5deg) rotate(-1deg);
+
+  update() {
+    if (this.pointsDrawn < MAX_POINTS_PER_BRANCH - 1) {
+      const newDirection = new THREE.Vector3(
+        Math.random() - 0.5,
+        Math.random() - 0.5,
+        Math.random() - 0.5
+      ).normalize();
+
+      if (this.vertices.length > 1) {
+        const previousDirection = new THREE.Vector3().subVectors(
+          this.vertices[this.vertices.length - 1], 
+          this.vertices[this.vertices.length - 2]
+        ).normalize();
+        newDirection.add(previousDirection).normalize();
+      }
+
+      this.currentPosition.add(newDirection.multiplyScalar(isMobile ? 0.6 : 0.3));  // モバイルは超高速
+      this.vertices.push(this.currentPosition.clone());
+
+      const positions = this.geometry.attributes.position.array;
+      const p1 = this.vertices[this.pointsDrawn];
+      const p2 = this.vertices[this.pointsDrawn + 1];
+
+      positions[this.pointsDrawn * 3] = p1.x;
+      positions[this.pointsDrawn * 3 + 1] = p1.y;
+      positions[this.pointsDrawn * 3 + 2] = p1.z;
+      
+      positions[(this.pointsDrawn + 1) * 3] = p2.x;
+      positions[(this.pointsDrawn + 1) * 3 + 1] = p2.y;
+      positions[(this.pointsDrawn + 1) * 3 + 2] = p2.z;
+      
+      this.pointsDrawn++;
+      
+      this.geometry.setDrawRange(0, this.pointsDrawn);
+      this.geometry.attributes.position.needsUpdate = true;
+    }
   }
 }
 
-/* 追加のオーロラレイヤー */
-.light-ray.aurora-extra:nth-child(9) {
-  top: -10%;
-  height: 40%;
-  background: 
-    radial-gradient(ellipse at 30% 0%, rgba(0, 255, 200, 0.3) 0%, transparent 40%),
-    radial-gradient(ellipse at 70% 0%, rgba(100, 200, 255, 0.25) 0%, transparent 40%),
-    linear-gradient(180deg,
-      rgba(0, 255, 200, 0.4) 0%,
-      rgba(0, 255, 255, 0.3) 10%,
-      rgba(50, 200, 255, 0.2) 20%,
-      rgba(0, 255, 200, 0.1) 35%,
-      rgba(0, 200, 255, 0.05) 50%,
-      transparent 70%);
-  filter: blur(20px);
-  animation-duration: 40s;
-  animation-delay: 15s;
+const colors = [0x00aaff, 0xff00ff, 0xffff00];
+const branches = [];
+
+
+// 2.5 意識の砂嵐（パーティクル）の作成
+const particlesCount = isMobile ? 3000 : 50000;  // モバイルは3000個
+const particlePositions = new Float32Array(particlesCount * 3);
+const particleVelocities = new Float32Array(particlesCount * 3);
+const stormArea = 60;
+
+for (let i = 0; i < particlesCount; i++) {
+    particlePositions[i * 3 + 0] = (Math.random() - 0.5) * stormArea;
+    particlePositions[i * 3 + 1] = (Math.random() - 0.5) * stormArea;
+    particlePositions[i * 3 + 2] = (Math.random() - 0.5) * stormArea;
+
+    particleVelocities[i * 3 + 0] = (Math.random() - 0.5) * 0.005;
+    particleVelocities[i * 3 + 1] = (Math.random() - 0.5) * 0.005;
+    particleVelocities[i * 3 + 2] = (Math.random() - 0.5) * 0.005;
 }
 
-.light-ray.aurora-extra:nth-child(10) {
-  top: 0%;
-  height: 45%;
-  background: 
-    linear-gradient(180deg,
-      rgba(0, 255, 255, 0.2) 0%,
-      rgba(50, 255, 200, 0.25) 10%,
-      rgba(0, 200, 255, 0.2) 20%,
-      rgba(100, 255, 220, 0.15) 30%,
-      rgba(0, 255, 200, 0.1) 40%,
-      rgba(150, 200, 255, 0.05) 50%,
-      transparent 70%);
-  filter: blur(35px);
-  animation-duration: 28s;
-  animation-delay: 20s;
-  animation-name: aurora-dance-vertical;
+const particlesGeometry = new THREE.BufferGeometry();
+particlesGeometry.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
+
+const particlesMaterial = new THREE.PointsMaterial({
+    color: 0xffffff,
+    size: 0.03,
+    sizeAttenuation: true,
+    transparent: true,
+    opacity: 0.3,
+    blending: THREE.AdditiveBlending,
+});
+
+const consciousnessStorm = new THREE.Points(particlesGeometry, particlesMaterial);
+world.add(consciousnessStorm);
+
+
+// ■ 3. スクロールによる進化制御とセクションアニメーション
+let scrollY = window.scrollY;
+let currentSection = 0;
+
+// セクションの監視
+const observerOptions = {
+  threshold: 0.5
+};
+
+const sectionObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      // アニメーションを削除したので、activeクラスも不要
+      // entry.target.classList.add('active');
+    }
+  });
+}, observerOptions);
+
+// 全てのセクションを監視
+document.querySelectorAll('.section').forEach(section => {
+  sectionObserver.observe(section);
+});
+
+// スクロールインジケーターのクリック処理
+const scrollIndicator = document.querySelector('.scroll-indicator');
+if (scrollIndicator) {
+  scrollIndicator.addEventListener('click', () => {
+    window.scrollTo({
+      top: window.innerHeight,
+      behavior: 'smooth'
+    });
+  });
 }
 
-@keyframes aurora-dance-vertical {
-  0%, 100% { 
-    opacity: 0;
-    transform: translateY(100px) translateX(0) scaleX(1) skewY(0deg);
+window.addEventListener('scroll', () => {
+  scrollY = window.scrollY;
+  const newSection = Math.round(scrollY / sizes.height);
+
+  if (newSection !== currentSection) {
+    currentSection = newSection;
+    console.log('Evolution Stage:', currentSection);
   }
-  15% {
-    opacity: 0.5;
-    transform: translateY(50px) translateX(-20px) scaleX(1.1) skewY(5deg);
+
+  // スクロールしたらbodyにクラスを追加（スクロールインジケーター非表示用）
+  if (scrollY > 100) {
+    document.body.classList.add('scrolled');
+  } else {
+    document.body.classList.remove('scrolled');
   }
-  30% {
-    opacity: 0.9;
-    transform: translateY(0px) translateX(30px) scaleX(1.2) skewY(-10deg);
+});
+
+
+// ■ 4. アニメーションループ
+const clock = new THREE.Clock(); 
+let previousTime = 0;
+let initialBranchesCreated = false;
+
+const animate = () => {
+  const elapsedTime = clock.getElapsedTime(); 
+  const deltaTime = elapsedTime - previousTime; 
+  previousTime = elapsedTime; 
+
+  // ステージ1：最初の創発 (0.5秒後に自動実行)
+  if (elapsedTime > 0.5 && !initialBranchesCreated) {
+    colors.forEach(color => {
+      const branch = new Branch(color, new THREE.Vector3(0, 0, 0));
+      branches.push(branch);
+      world.add(branch.line);
+    });
+    initialBranchesCreated = true;
   }
-  45% {
-    opacity: 1;
-    transform: translateY(-50px) translateX(-40px) scaleX(0.9) skewY(8deg);
+
+  // ステージ2：拡張（フラクタル分岐）
+  if (currentSection >= 2 && branches.length < MAX_BRANCHES && Math.random() < 0.05) {
+      const parentBranch = branches[Math.floor(Math.random() * branches.length)];
+      if (parentBranch.vertices.length > 10) {
+          const spawnIndex = Math.floor(Math.random() * (parentBranch.vertices.length - 1));
+          const spawnPoint = parentBranch.vertices[spawnIndex];
+          
+          const newColor = colors[Math.floor(Math.random() * colors.length)];
+          const newBranch = new Branch(newColor, spawnPoint);
+          branches.push(newBranch);
+          world.add(newBranch.line);
+      }
   }
-  60% {
-    opacity: 0.8;
-    transform: translateY(-100px) translateX(20px) scaleX(1.3) skewY(-5deg);
+
+  // 各線を更新
+  branches.forEach(branch => { branch.update(); });
+
+  // 砂嵐を更新
+  const stormPositions = consciousnessStorm.geometry.attributes.position.array;
+  const halfStorm = stormArea / 2;
+  for (let i = 0; i < particlesCount; i++) {
+    const i3 = i * 3;
+    stormPositions[i3 + 0] += particleVelocities[i3 + 0];
+    stormPositions[i3 + 1] += particleVelocities[i3 + 1];
+    stormPositions[i3 + 2] += particleVelocities[i3 + 2];
+    
+    // 3次元的にループさせる
+    if (stormPositions[i3 + 0] > halfStorm) stormPositions[i3 + 0] = -halfStorm;
+    if (stormPositions[i3 + 0] < -halfStorm) stormPositions[i3 + 0] = halfStorm;
+    if (stormPositions[i3 + 1] > halfStorm) stormPositions[i3 + 1] = -halfStorm;
+    if (stormPositions[i3 + 1] < -halfStorm) stormPositions[i3 + 1] = halfStorm;
+    if (stormPositions[i3 + 2] > halfStorm) stormPositions[i3 + 2] = -halfStorm;
+    if (stormPositions[i3 + 2] < -halfStorm) stormPositions[i3 + 2] = halfStorm;
   }
-  75% {
-    opacity: 0.6;
-    transform: translateY(-50px) translateX(-30px) scaleX(0.8) skewY(12deg);
-  }
-  90% {
-    opacity: 0.3;
-    transform: translateY(0px) translateX(40px) scaleX(1.1) skewY(-3deg);
-  }
-}
-
-/* Three.jsのcanvas */
-.webgl {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  outline: none;
-  z-index: -1;
-}
-
-/* ロゴコンテナ */
-.logo-container {
-  position: fixed;
-  top: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  pointer-events: none;
-  opacity: 1;
-}
-
-.logo {
-  width: 100px;
-  height: auto;
-  filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.8));
-  opacity: 1;
-}
-
-/* メインコンテンツ */
-.main {
-  position: relative;
-  width: 100%;
-  z-index: 1;
-}
-
-/* 各セクション */
-.section {
-  position: relative;
-  min-height: 100vh;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 10vw;
-}
-
-/* 最初のセクションの特別な処理 */
-.section:first-child {
-  align-items: center;
-  padding-top: 120px;
-}
-
-.section:first-child .content {
-  position: relative;
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* コンテンツボックス */
-.content {
-  max-width: 800px;
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-  /* カードスタイル */
-  background: rgba(0, 20, 40, 0.005); /* 99.5%透明 */
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(0, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 40px;
-  box-shadow: 
-    0 8px 32px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
-}
-
-.content::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(0, 255, 255, 0.3) 50%, 
-    transparent 100%);
-  border-radius: 20px 20px 0 0;
-}
-
-.content h2 {
-  font-size: 3rem;
-  font-weight: 400;
-  margin-bottom: 16px;
-  text-shadow: 0 0 15px rgba(0, 170, 255, 0.7);
-  background: linear-gradient(135deg, #ffffff 0%, rgba(0, 255, 255, 0.9) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.content p {
-  font-size: 1.1rem;
-  font-weight: 300;
-  line-height: 1.8;
-  text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
-  margin-bottom: 8px;
-}
-
-.content p.lead {
-  font-size: 1.3rem;
-  font-weight: 400;
-  color: rgba(0, 255, 255, 0.9);
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.content p.detail {
-  font-size: 0.95rem;
-  opacity: 0.9;
-  margin-top: 16px;
-  line-height: 1.7;
-}
-
-.content p.emphasis {
-  font-weight: 400;
-  color: rgba(0, 255, 255, 0.8);
-  text-align: center;
-  margin: 24px 0;
-  font-size: 1.05rem;
-}
-
-.content p.emphasis-small {
-  font-size: 0.9rem;
-  color: rgba(0, 255, 255, 0.7);
-  margin-top: 12px;
-  margin-bottom: 8px;
-}
-
-.content strong {
-  font-weight: 400;
-  color: rgba(0, 255, 255, 0.9);
-}
-
-/* サービスリスト */
-.service-list {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-}
-
-.service-list li {
-  font-size: 0.85rem;
-  line-height: 1.6;
-  padding-left: 1.2em;
-  position: relative;
-  margin-bottom: 4px;
-  opacity: 0.85;
-}
-
-.service-list li:before {
-  content: "▸";
-  position: absolute;
-  left: 0;
-  color: rgba(0, 255, 255, 0.5);
-}
-
-/* サービスグリッド */
-.service-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-top: 24px;
-}
-
-.service-item {
-  background: rgba(0, 30, 60, 0.005); /* 99.5%透明 */
-  padding: 24px;
-  border-radius: 16px;
-  border: 1px solid rgba(0, 255, 255, 0.08);
-  backdrop-filter: blur(5px);
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.service-item::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(0, 255, 255, 0.1) 50%, 
-    transparent 100%);
-}
-
-.service-item:hover {
-  background: rgba(0, 40, 80, 0.08);
-  border-color: rgba(0, 255, 255, 0.15);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.service-item h3 {
-  font-size: 1.2rem;
-  font-weight: 400;
-  margin-bottom: 12px;
-  color: rgba(0, 255, 255, 0.9);
-}
-
-.service-item p {
-  font-size: 0.9rem;
-  line-height: 1.6;
-}
-
-/* スクロールインジケーター */
-.scroll-indicator {
-  position: fixed;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 5;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  opacity: 1;
-  cursor: pointer;
-  transition: transform 0.3s ease;
-}
-
-.scroll-indicator:hover {
-  transform: translateX(-50%) translateY(-5px);
-}
-
-.scroll-text {
-  font-size: 0.75rem;
-  letter-spacing: 0.2em;
-  color: rgba(0, 255, 255, 0.6);
-  font-weight: 300;
-  writing-mode: horizontal-tb;
-}
-
-.scroll-arrow {
-  width: 24px;
-  height: 40px;
-  position: relative;
-}
-
-.scroll-arrow span {
-  position: absolute;
-  left: 50%;
-  width: 2px;
-  height: 10px;
-  background: rgba(0, 255, 255, 0.6);
-  transform: translateX(-50%) rotate(45deg);
-  transform-origin: bottom;
-  animation: scroll-arrow-animate 2s ease-in-out infinite;
-}
-
-.scroll-arrow span:nth-child(1) {
-  top: 0;
-  animation-delay: 0s;
-}
-
-.scroll-arrow span:nth-child(2) {
-  top: 10px;
-  animation-delay: 0.2s;
-}
-
-.scroll-arrow span:nth-child(3) {
-  top: 20px;
-  animation-delay: 0.4s;
-}
-
-.scroll-arrow span::after {
-  content: '';
-  position: absolute;
-  left: -6px;
-  top: 0;
-  width: 2px;
-  height: 100%;
-  background: rgba(0, 255, 255, 0.6);
-  transform: rotate(-90deg);
-}
-
-@keyframes scroll-arrow-animate {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(-10px) rotate(45deg);
-  }
-  50% {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0) rotate(45deg);
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(-50%) translateY(10px) rotate(45deg);
-  }
-}
-
-/* 2ページ目以降でスクロールインジケーターを非表示 */
-body.scrolled .scroll-indicator {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.5s ease;
-}
-
-/* レスポンシブ対応 */
-@media (max-width: 768px) {
-  .scroll-indicator {
-    bottom: 30px;
-  }
+  consciousnessStorm.geometry.attributes.position.needsUpdate = true;
   
-  .section {
-    padding: 60px 5vw;
-    min-height: auto;
+  // ステージ3：覚醒（脈動）- モバイルでは無効化
+  if (currentSection >= 3 && !isMobile) {
+      const pulse = (Math.sin(elapsedTime * 4.0) + 1.0) / 2.0;
+      particlesMaterial.size = 0.03 + pulse * 0.03;
+      particlesMaterial.opacity = 0.3 + pulse * 0.3;
+      const targetColor = new THREE.Color(0xffffff);
+      branches.forEach(branch => {
+          branch.material.opacity = 0.5 + pulse * 0.5;
+          branch.material.color.copy(branch.originalColor).lerp(targetColor, pulse);
+      });
+  } else if (!isMobile) {
+      const lerpFactor = 0.1;
+      particlesMaterial.size += (0.03 - particlesMaterial.size) * lerpFactor;
+      particlesMaterial.opacity += (0.3 - particlesMaterial.opacity) * lerpFactor;
+      branches.forEach(branch => {
+          branch.material.opacity += (0.8 - branch.material.opacity) * lerpFactor;
+          branch.material.color.lerp(branch.originalColor, lerpFactor);
+      });
   }
-  
-  .section:first-child {
-    padding-top: 100px;
-  }
-  
-  .content {
-    padding: 30px 24px;
-    border-radius: 16px;
-  }
-  
-  .content h2 {
-    font-size: 2rem;
-  }
-  
-  .content p {
-    font-size: 1rem;
-  }
-  
-  .content p.detail {
-    font-size: 0.9rem;
-  }
-  
-  .service-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  
-  .service-item {
-    padding: 20px;
-  }
-  
-  .orb-primary {
-    width: 400px;
-    height: 400px;
-  }
-  
-  .orb-secondary {
-    width: 300px;
-    height: 300px;
-  }
-  
-  .orb-accent {
-    width: 350px;
-    height: 350px;
-  }
-  
-  /* モバイル専用の背景グラデーション */
-  body {
-    background: linear-gradient(135deg, #0a0020, #200040, #002040);
-    background-size: 400% 400%;
-    animation: mobile-gradient 15s ease infinite;
-  }
-  
-  @keyframes mobile-gradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
-  
-  /* モバイル専用の軽量化 */
-  .content, .service-item {
-    backdrop-filter: none !important;
-    background: rgba(0, 20, 40, 0.9) !important;
-    box-shadow: none !important;
-  }
-  
-  /* 背景エフェクトをすべて非表示（オーブは表示） */
-  .light-ray,
-  .gradient-overlay,
-  .noise-overlay {
-    display: none !important;
-  }
-  
-  /* オーブは表示するがアニメーションは停止 */
-  .orb {
-    animation: none !important;
-    opacity: 0.2;
-  }
-  
-  /* Three.jsキャンバスの霧を薄く */
-  .webgl {
-    opacity: 0.7;
-  }
-  
-  /* スクロール矢印も簡素化 */
-  .scroll-arrow span {
-    animation: none !important;
-    opacity: 0.6;
-  }
-}
+
+  // スクロールで世界を回転
+  const targetRotationY = (scrollY / sizes.height) * 0.5;
+  world.rotation.y += (targetRotationY - world.rotation.y) * 5 * deltaTime;
+
+  controls.update();
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+};
+
+animate();
+
+// ■ 5. ウィンドウリサイズへの対応
+window.addEventListener('resize', () => {
+    sizes.width = document.documentElement.clientWidth;
+    sizes.height = document.documentElement.clientHeight;
+
+    camera.aspect = sizes.width / sizes.height;
+    camera.updateProjectionMatrix();
+
+    renderer.setSize(sizes.width, sizes.height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+});
