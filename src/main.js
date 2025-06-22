@@ -120,7 +120,7 @@ const branches = [];
 
 
 // 2.5 意識の砂嵐（パーティクル）の作成
-const particlesCount = isMobile ? 3000 : 50000;  // モバイルは3000個
+const particlesCount = isMobile ? 10000 : 50000;  // モバイルは3000個
 const particlePositions = new Float32Array(particlesCount * 3);
 const particleVelocities = new Float32Array(particlesCount * 3);
 const stormArea = 60;

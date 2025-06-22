@@ -696,7 +696,7 @@ body.scrolled .scroll-indicator {
   
   /* モバイル専用の背景グラデーション */
   body {
-    background: linear-gradient(135deg, #0a0020, #200040, #002040);
+    background: linear-gradient(135deg, #0a0020, #200040, #002040) !important;
     background-size: 400% 400%;
     animation: mobile-gradient 15s ease infinite;
   }
