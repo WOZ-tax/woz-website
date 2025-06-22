@@ -710,7 +710,7 @@ body.scrolled .scroll-indicator {
   /* モバイル専用の軽量化 */
   .content, .service-item {
     backdrop-filter: none !important;
-    background: rgba(0, 20, 40, 0.9) !important;
+    background: rgba(0, 20, 40, 0.05) !important;
     box-shadow: none !important;
   }
   
