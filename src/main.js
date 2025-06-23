@@ -52,7 +52,7 @@ scene.add(world);
 
 // ■ 2. フラクタル成長のロジック
 
-const MAX_POINTS_PER_BRANCH = isMobile ? 500 : 5000;  // モバイルは1/10に
+const MAX_POINTS_PER_BRANCH = isMobile ? 2000 : 5000;  // モバイルは1/10に
 const MAX_BRANCHES = isMobile ? 20 : 40;  // モバイルは20本
 
 class Branch {
@@ -140,7 +140,7 @@ particlesGeometry.setAttribute('position', new THREE.BufferAttribute(particlePos
 
 const particlesMaterial = new THREE.PointsMaterial({
     color: 0xffffff,
-    size: 0.03,
+    size: 0.1,
     sizeAttenuation: true,
     transparent: true,
     opacity: 0.3,
