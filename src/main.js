@@ -92,7 +92,7 @@ class Branch {
         newDirection.add(previousDirection).normalize();
       }
 
-      this.currentPosition.add(newDirection.multiplyScalar(isMobile ? 0.6 : 0.3));  // モバイルは超高速
+      this.currentPosition.add(newDirection.multiplyScalar(isMobile ? 0.8 : 0.5));  // モバイルは超高速
       this.vertices.push(this.currentPosition.clone());
 
       const positions = this.geometry.attributes.position.array;
@@ -120,7 +120,7 @@ const branches = [];
 
 
 // 2.5 意識の砂嵐（パーティクル）の作成
-const particlesCount = isMobile ? 6000 : 50000;  // モバイルは6000個
+const particlesCount = isMobile ? 6000 : 25000;  // モバイルは6000個
 const particlePositions = new Float32Array(particlesCount * 3);
 const particleVelocities = new Float32Array(particlesCount * 3);
 const stormArea = 60;
