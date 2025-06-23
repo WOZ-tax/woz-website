@@ -120,7 +120,7 @@ const branches = [];
 
 
 // 2.5 意識の砂嵐（パーティクル）の作成
-const particlesCount = isMobile ? 10000 : 50000;  // モバイルは3000個
+const particlesCount = isMobile ? 6000 : 50000;  // モバイルは6000個
 const particlePositions = new Float32Array(particlesCount * 3);
 const particleVelocities = new Float32Array(particlesCount * 3);
 const stormArea = 60;
@@ -237,25 +237,55 @@ const animate = () => {
       }
   }
 
-  // 各線を更新
-  branches.forEach(branch => { branch.update(); });
+  // 各線を更新（画面内のみ）
+  branches.forEach(branch => {
+    // ブランチの最新点が画面内にあるかチェック
+    if (branch.vertices.length > 0) {
+      const lastVertex = branch.vertices[branch.vertices.length - 1];
+      const screenPos = lastVertex.clone();
+      screenPos.project(camera);
+      
+      // 画面内（-1 ~ 1の範囲）またはその近くにある場合のみ更新
+      if (Math.abs(screenPos.x) < 1.5 && Math.abs(screenPos.y) < 1.5) {
+        branch.update();
+      }
+    }
+  });
 
-  // 砂嵐を更新
+  // 砂嵐を更新（画面内のパーティクルのみ処理）
   const stormPositions = consciousnessStorm.geometry.attributes.position.array;
   const halfStorm = stormArea / 2;
+  
+  // カメラの視錐台を取得
+  const frustum = new THREE.Frustum();
+  const cameraMatrix = new THREE.Matrix4();
+  cameraMatrix.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+  frustum.setFromProjectionMatrix(cameraMatrix);
+  
   for (let i = 0; i < particlesCount; i++) {
     const i3 = i * 3;
-    stormPositions[i3 + 0] += particleVelocities[i3 + 0];
-    stormPositions[i3 + 1] += particleVelocities[i3 + 1];
-    stormPositions[i3 + 2] += particleVelocities[i3 + 2];
     
-    // 3次元的にループさせる
-    if (stormPositions[i3 + 0] > halfStorm) stormPositions[i3 + 0] = -halfStorm;
-    if (stormPositions[i3 + 0] < -halfStorm) stormPositions[i3 + 0] = halfStorm;
-    if (stormPositions[i3 + 1] > halfStorm) stormPositions[i3 + 1] = -halfStorm;
-    if (stormPositions[i3 + 1] < -halfStorm) stormPositions[i3 + 1] = halfStorm;
-    if (stormPositions[i3 + 2] > halfStorm) stormPositions[i3 + 2] = -halfStorm;
-    if (stormPositions[i3 + 2] < -halfStorm) stormPositions[i3 + 2] = halfStorm;
+    // パーティクルの位置を取得
+    const particlePos = new THREE.Vector3(
+      stormPositions[i3],
+      stormPositions[i3 + 1],
+      stormPositions[i3 + 2]
+    );
+    
+    // 画面内にあるパーティクルのみ更新
+    if (frustum.containsPoint(particlePos)) {
+      stormPositions[i3 + 0] += particleVelocities[i3 + 0];
+      stormPositions[i3 + 1] += particleVelocities[i3 + 1];
+      stormPositions[i3 + 2] += particleVelocities[i3 + 2];
+      
+      // 3次元的にループさせる
+      if (stormPositions[i3 + 0] > halfStorm) stormPositions[i3 + 0] = -halfStorm;
+      if (stormPositions[i3 + 0] < -halfStorm) stormPositions[i3 + 0] = halfStorm;
+      if (stormPositions[i3 + 1] > halfStorm) stormPositions[i3 + 1] = -halfStorm;
+      if (stormPositions[i3 + 1] < -halfStorm) stormPositions[i3 + 1] = halfStorm;
+      if (stormPositions[i3 + 2] > halfStorm) stormPositions[i3 + 2] = -halfStorm;
+      if (stormPositions[i3 + 2] < -halfStorm) stormPositions[i3 + 2] = halfStorm;
+    }
   }
   consciousnessStorm.geometry.attributes.position.needsUpdate = true;
   
