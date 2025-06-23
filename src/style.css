@@ -85,14 +85,6 @@ body::-webkit-scrollbar {
   animation: float 25s infinite ease-in-out;
 }
 
-.orb-primary {
-  width: 600px; 
-  height: 600px;
-  background: radial-gradient(circle, rgba(0, 240, 255, 0.8) 0%, transparent 70%);
-  top: -200px; 
-  left: -200px;
-  animation-duration: 30s;
-}
 
 .orb-secondary {
   width: 400px; 
@@ -104,16 +96,6 @@ body::-webkit-scrollbar {
   animation-delay: -10s;
 }
 
-.orb-accent {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(123, 97, 255, 0.6) 0%, transparent 70%);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  animation-duration: 40s;
-  animation-delay: -20s;
-}
 
 .pulse-orb {
   width: 300px; 
